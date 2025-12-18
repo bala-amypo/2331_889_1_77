@@ -6,7 +6,9 @@ public class SkillGapRecommendation{
     private String HIGH;
     private String MEDIUM;
     private String LOW;
-    private LocalDate generatedBy;
+    private LocalDate generatedAt;
+    private Double gapScore;
+    private String generatedBy;
     public Long getId() {
         return id;
     }
@@ -37,25 +39,37 @@ public class SkillGapRecommendation{
     public void setLOW(String lOW) {
         LOW = lOW;
     }
-    public LocalDate getGeneratedBy() {
+    public LocalDate getGeneratedAt() {
+        return generatedAt;
+    }
+    public void setGeneratedAt(LocalDate generatedAt) {
+        this.generatedAt = generatedAt;
+    }
+    public Double getGapScore() {
+        return gapScore;
+    }
+    public void setGapScore(Double gapScore) {
+        this.gapScore = gapScore;
+    }
+    public String getGeneratedBy() {
         return generatedBy;
     }
-    public void setGeneratedBy(LocalDate generatedBy) {
+    public void setGeneratedBy(String generatedBy) {
         this.generatedBy = generatedBy;
     }
     public SkillGapRecommendation(Long id, String recommendedAction, String hIGH, String mEDIUM, String lOW,
-            LocalDate generatedBy) {
+            LocalDate generatedAt, Double gapScore, String generatedBy) {
         this.id = id;
         this.recommendedAction = recommendedAction;
         HIGH = hIGH;
         MEDIUM = mEDIUM;
         LOW = lOW;
+        this.generatedAt = generatedAt;
+        this.gapScore = gapScore;
         this.generatedBy = generatedBy;
     }
     public SkillGapRecommendation() {
     }
-
-
-
     
+
 }
