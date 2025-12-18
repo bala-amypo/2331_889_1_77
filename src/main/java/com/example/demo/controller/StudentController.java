@@ -8,22 +8,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.entity.Studententity;
-import com.example.demo.service.Studentservice;
+import com.example.demo.entity.StudentEntity;
+import com.example.demo.service.StudentService;
 
 @RestController
-public class Studentcontroller {
+public class StudentController {
 
     @Autowired
-    private Studentservice src;
+    private StudentService src;
 
     @PostMapping("/post")
-    public Studententity postdata(@RequestBody Studententity st) {
+    public StudentEntity postdata(@RequestBody StudentEntity st) {
         return src.savadata(st);
     }
 
     @GetMapping("/get")
-    public List<Studententity> getdata() {
+    public List<StudentEntity> getdata() {
         return src.retdata();
     }
 }
