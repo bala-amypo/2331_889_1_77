@@ -2,5 +2,9 @@ package.com.example.demo.entity;
 
 public class Skill{
     private Long id;
-    private 
+    @Column(unique=true)
+    private String skillName;
+    private String category;
+    private String description;
+
 }
