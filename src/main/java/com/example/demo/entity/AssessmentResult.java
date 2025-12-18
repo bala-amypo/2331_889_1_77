@@ -4,7 +4,7 @@ public class AssessmentResult{
     private Long id;
     private Double scoreObtained;
     private Double maxScore;
-    private Timestamp assessedAt;
+    private LocalDate assessedAt;
     public Long getId() {
         return id;
     }
@@ -23,13 +23,13 @@ public class AssessmentResult{
     public void setMaxScore(Double maxScore) {
         this.maxScore = maxScore;
     }
-    public Timestamp getAssessedAt() {
+    public LocalDate getAssessedAt() {
         return assessedAt;
     }
-    public void setAssessedAt(Timestamp assessedAt) {
+    public void setAssessedAt(LocalDate assessedAt) {
         this.assessedAt = assessedAt;
     }
-    public AssessmentResult(Long id, Double scoreObtained, Double maxScore, Timestamp assessedAt) {
+    public AssessmentResult(Long id, Double scoreObtained, Double maxScore, LocalDate assessedAt) {
         this.id = id;
         this.scoreObtained = scoreObtained;
         this.maxScore = maxScore;
@@ -37,4 +37,6 @@ public class AssessmentResult{
     }
     public AssessmentResult() {
     }
+    
+
 }
