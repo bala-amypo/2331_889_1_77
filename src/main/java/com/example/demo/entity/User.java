@@ -1,4 +1,4 @@
-package com.example.demo.entity;
+package.com.example.demo.entity;
 
 public class User{
     private Long id;
@@ -9,7 +9,7 @@ public class User{
     private String ADMIN;
     private String INSTRUCTOR;
     private String STUDENT;
-    private Timestamp createdAt;
+    private LocalDate createdAt;
     public Long getId() {
         return id;
     }
@@ -52,14 +52,11 @@ public class User{
     public void setSTUDENT(String sTUDENT) {
         STUDENT = sTUDENT;
     }
-    public Timestamp getCreatedAt() {
+    public LocalDate getCreatedAt() {
         return createdAt;
     }
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
-    }
     public User(Long id, String fullName, String email, String password, String aDMIN, String iNSTRUCTOR,
-            String sTUDENT, Timestamp createdAt) {
+            String sTUDENT, LocalDate createdAt) {
         this.id = id;
         this.fullName = fullName;
         this.email = email;
@@ -67,6 +64,9 @@ public class User{
         ADMIN = aDMIN;
         INSTRUCTOR = iNSTRUCTOR;
         STUDENT = sTUDENT;
+        this.createdAt = createdAt;
+    }
+    public void setCreatedAt(LocalDate createdAt) {
         this.createdAt = createdAt;
     }
     public User() {
