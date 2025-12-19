@@ -1,6 +1,9 @@
 package.com.example.demo.entity;
 
+import jakarta.persistence.*;
+
 public class Skill{
+    @Id
     private Long id;
     @Column(unique=true)
     private String skillName;

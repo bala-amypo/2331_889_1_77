@@ -1,6 +1,9 @@
 ppackage com.example.demo.entity;
 
+import jakarta.persistence.*;
+
 public class StudentProfile{
+    @Id
     private Long id;
     @Column(unique=true)
     private String entrollmentId;

@@ -1,6 +1,9 @@
 package.com.example.demo.entity;
 
+import jakarta.persistence.*;
+
 public class SkillGapRecord{
+    @Id
     private Long id;
     private Double currentScore;
     private Double targetScore;

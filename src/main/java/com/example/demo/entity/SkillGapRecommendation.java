@@ -1,6 +1,9 @@
 package.com.example.demo.entity;
 
+import jakarta.persistence.*;
+
 public class SkillGapRecommendation{
+    @Id
     private Long id;
     private String recommendedAction;
     private String HIGH;
