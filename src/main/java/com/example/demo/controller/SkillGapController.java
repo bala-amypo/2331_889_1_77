@@ -15,25 +15,25 @@ public class SkillGapController {
     @Autowired
     private SkillGapService skillGapService;
 
-    // ✅ Create Skill Gap Record
+    
     @PostMapping
     public SkillGapRecord createSkillGap(@RequestBody SkillGapRecord record) {
         return skillGapService.saveSkillGap(record);
     }
 
-    // ✅ Get Skill Gap Record by ID
+    
     @GetMapping("/{id}")
     public SkillGapRecord getSkillGapById(@PathVariable Long id) {
         return skillGapService.getSkillGapById(id);
     }
 
-    // ✅ Get All Skill Gap Records
+    
     @GetMapping
     public List<SkillGapRecord> getAllSkillGaps() {
         return skillGapService.getAllSkillGaps();
     }
 
-    // ✅ Update Skill Gap Record
+    
     @PutMapping("/{id}")
     public SkillGapRecord updateSkillGap(
             @PathVariable Long id,
