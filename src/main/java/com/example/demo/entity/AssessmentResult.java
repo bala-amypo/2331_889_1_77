@@ -1,6 +1,8 @@
 package.com.example.demo.entity;
 
+import jakarta.persistence.*;
 public class AssessmentResult{
+    @Id
     private Long id;
     private Double scoreObtained;
     private Double maxScore;
