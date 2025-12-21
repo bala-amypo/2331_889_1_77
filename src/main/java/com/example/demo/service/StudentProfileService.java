@@ -1,13 +1,12 @@
-package com.example.demo.service.impl;
+package com.example.demo.service;
 
-import com.example.demo.entity.StudentProfile;
-import com.example.demo.repository.StudentProfileRepository;
-import com.example.demo.service.StudentProfileService;
-import com.example.demo.exception.ResourceNotFoundException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.List;
+
+import com.example.demo.entity.StudentProfile;
+import com.example.demo.repository.StudentProfileRepository;
 
 @Service
 public class StudentProfileServiceImpl implements StudentProfileService {
@@ -16,24 +15,48 @@ public class StudentProfileServiceImpl implements StudentProfileService {
     private StudentProfileRepository repository;
 
     @Override
-    public StudentProfile createProfile(StudentProfile profile) {
+    public StudentProfile saveStudentProfile(StudentProfile profile) {
+
+        // Default active = true
+        if (profile.getActive() == null) {
+            profile.setActive(true);
+        }
+
         return repository.save(profile);
     }
 
     @Override
-    public StudentProfile getProfileById(Long id) throws ResourceNotFoundException {
-        return repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("StudentProfile not found with id: " + id));
+    public StudentProfile getStudentProfileById(Long id) {
+        return repository.findById(id).orElse(null);
     }
 
     @Override
-    public StudentProfile getProfileByEnrollmentId(String enrollmentId) {
-        return repository.findByEnrollmentId(enrollmentId)
-                .orElse(null);
+    public StudentProfile getByEntrollmentId(String entrollmentId) {
+        return repository.findByEntrollmentId(entrollmentId);
     }
 
     @Override
-    public List<StudentProfile> getAllProfiles() {
+    public List<StudentProfile> getAllStudentProfiles() {
         return repository.findAll();
+    }
+
+    @Override
+    public StudentProfile updateStudentProfile(Long id, StudentProfile profile) {
+        StudentProfile existing = repository.findById(id).orElse(null);
+
+        if (existing != null) {
+            existing.setEntrollmentId(profile.getEntrollmentId());
+            existing.setCohort(profile.getCohort());
+            existing.setYearLevel(profile.getYearLevel());
+            existing.setActive(profile.getActive());
+
+            return repository.save(existing);
+        }
+        return null;
+    }
+
+    @Override
+    public void deleteStudentProfile(Long id) {
+        repository.deleteById(id);
     }
 }

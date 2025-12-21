@@ -1,55 +1,47 @@
-package com.example.demo.service;
+package com.example.demo.service.impl;
 
-import java.util.List;
-
+import com.example.demo.entity.SkillGap;
+import com.example.demo.entity.SkillGapRecommendation;
+import com.example.demo.repository.SkillGapRepository;
+import com.example.demo.repository.RecommendationRepository;
+import com.example.demo.service.RecommendationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.entity.SkillGapRecommendation;
-import com.example.demo.repository.SkillGapRecommendationRepository;
+import java.util.List;
 
 @Service
 public class RecommendationServiceImpl implements RecommendationService {
 
     @Autowired
-    private SkillGapRecommendationRepository repository;
+    private RecommendationRepository recommendationRepository;
+
+    @Autowired
+    private SkillGapRepository gapRepository;
 
     @Override
-    public SkillGapRecommendation saveRecommendation(SkillGapRecommendation recommendation) {
-        return repository.save(recommendation);
-    }
+    public void generateRecommendations(Long studentProfileId) {
+        // Fetch gap records for the student
+        List<SkillGap> gaps = gapRepository.findByStudentProfileId(studentProfileId);
 
-    @Override
-    public SkillGapRecommendation getRecommendationById(Long id) {
-        return repository.findById(id).orElse(null);
-    }
+        for (SkillGap gapRecord : gaps) {
+            SkillGapRecommendation recommendation = new SkillGapRecommendation();
+            recommendation.setStudentProfileId(studentProfileId);
+            recommendation.setSkillId(gapRecord.getSkillId());
+            
+            // Logic: If gap > 20 -> HIGH priority
+            if (gapRecord.getGapValue() > 20) {
+                recommendation.setPriority("HIGH");
+            } else {
+                recommendation.setPriority("NORMAL");
+            }
 
-    @Override
-    public List<SkillGapRecommendation> getAllRecommendations() {
-        return repository.findAll();
-    }
-
-    @Override
-    public SkillGapRecommendation updateRecommendation(Long id, SkillGapRecommendation recommendation) {
-        SkillGapRecommendation existing = repository.findById(id).orElse(null);
-
-        if (existing != null) {
-            existing.setRecommendedAction(recommendation.getRecommendedAction());
-            existing.setHigh(recommendation.getHigh());
-            existing.setMedium(recommendation.getMedium());
-            existing.setLow(recommendation.getLow());
-            existing.setGapScore(recommendation.getGapScore());
-            existing.setGeneratedAt(recommendation.getGeneratedAt());
-            existing.setGeneratedBy(recommendation.getGeneratedBy());
-
-            return repository.save(existing);
+            recommendationRepository.save(recommendation);
         }
-
-        return null;
     }
 
     @Override
-    public void deleteRecommendation(Long id) {
-        repository.deleteById(id);
+    public List<SkillGapRecommendation> getRecommendationsByStudent(Long studentId) {
+        return recommendationRepository.findByStudentId(studentId);
     }
 }
