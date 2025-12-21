@@ -1,12 +1,12 @@
-package com.example.demo.service;
-
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+package com.example.demo.service.impl;
 
 import com.example.demo.entity.AssessmentResult;
 import com.example.demo.repository.AssessmentResultRepository;
+import com.example.demo.service.AssessmentResultService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.List;
 
 @Service
 public class AssessmentResultServiceImpl implements AssessmentResultService {
@@ -15,38 +15,18 @@ public class AssessmentResultServiceImpl implements AssessmentResultService {
     private AssessmentResultRepository repository;
 
     @Override
-    public AssessmentResult saveAssessment(AssessmentResult assessment) {
-        return repository.save(assessment);
+    public AssessmentResult recordResult(AssessmentResult result) {
+        // You can add validation logic here
+        return repository.save(result);
     }
 
     @Override
-    public AssessmentResult getAssessmentById(Long id) {
-        return repository.findById(id).orElse(null);
+    public List<AssessmentResult> getResultsByStudent(Long studentId) {
+        return repository.findByStudentId(studentId);
     }
 
     @Override
-    public List<AssessmentResult> getAllAssessments() {
-        return repository.findAll();
-    }
-
-    @Override
-    public AssessmentResult updateAssessment(Long id, AssessmentResult assessment) {
-
-        AssessmentResult existing = repository.findById(id).orElse(null);
-
-        if (existing == null) {
-            return null;
-        }
-
-        existing.setScoreObtained(assessment.getScoreObtained());
-        existing.setMaxScore(assessment.getMaxScore());
-        existing.setAssessedAt(assessment.getAssessedAt());
-
-        return repository.save(existing);
-    }
-
-    @Override
-    public void deleteAssessment(Long id) {
-        repository.deleteById(id);
+    public List<AssessmentResult> getResultsByStudentAndSkill(Long studentId, Long skillId) {
+        return repository.findByStudentIdAndSkillId(studentId, skillId);
     }
 }
