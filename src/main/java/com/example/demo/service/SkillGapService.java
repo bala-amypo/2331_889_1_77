@@ -18,12 +18,7 @@ public class SkillGapServiceImpl implements SkillGapService {
     @Override
     public SkillGapRecord saveSkillGap(SkillGapRecord record) {
 
-        // Business logic: auto-calculate gapScore if not provided
-        if (record.getCurrentScore() != null && record.getTargetScore() != null) {
-            record.setGapScore(record.getTargetScore() - record.getCurrentScore());
-        }
-
-        // Set current timestamp
+        calculateGapScore(record);
         record.setCalculatedAt(new Timestamp(System.currentTimeMillis()));
 
         return repository.save(record);
@@ -41,26 +36,31 @@ public class SkillGapServiceImpl implements SkillGapService {
 
     @Override
     public SkillGapRecord updateSkillGap(Long id, SkillGapRecord record) {
+
         SkillGapRecord existing = repository.findById(id).orElse(null);
 
-        if (existing != null) {
-            existing.setCurrentScore(record.getCurrentScore());
-            existing.setTargetScore(record.getTargetScore());
-
-            // Recalculate gap score
-            if (record.getCurrentScore() != null && record.getTargetScore() != null) {
-                existing.setGapScore(record.getTargetScore() - record.getCurrentScore());
-            }
-
-            existing.setCalculatedAt(new Timestamp(System.currentTimeMillis()));
-
-            return repository.save(existing);
+        if (existing == null) {
+            return null;
         }
-        return null;
+
+        existing.setCurrentScore(record.getCurrentScore());
+        existing.setTargetScore(record.getTargetScore());
+
+        calculateGapScore(existing);
+        existing.setCalculatedAt(new Timestamp(System.currentTimeMillis()));
+
+        return repository.save(existing);
     }
 
     @Override
     public void deleteSkillGap(Long id) {
         repository.deleteById(id);
+    }
+
+    // Helper method for business logic
+    private void calculateGapScore(SkillGapRecord record) {
+        if (record.getCurrentScore() != null && record.getTargetScore() != null) {
+            record.setGapScore(record.getTargetScore() - record.getCurrentScore());
+        }
     }
 }

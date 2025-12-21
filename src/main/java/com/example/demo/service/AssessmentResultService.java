@@ -31,15 +31,18 @@ public class AssessmentResultServiceImpl implements AssessmentResultService {
 
     @Override
     public AssessmentResult updateAssessment(Long id, AssessmentResult assessment) {
+
         AssessmentResult existing = repository.findById(id).orElse(null);
 
-        if (existing != null) {
-            existing.setScoreObtained(assessment.getScoreObtained());
-            existing.setMaxScore(assessment.getMaxScore());
-            existing.setAssessedAt(assessment.getAssessedAt());
-            return repository.save(existing);
+        if (existing == null) {
+            return null;
         }
-        return null;
+
+        existing.setScoreObtained(assessment.getScoreObtained());
+        existing.setMaxScore(assessment.getMaxScore());
+        existing.setAssessedAt(assessment.getAssessedAt());
+
+        return repository.save(existing);
     }
 
     @Override
