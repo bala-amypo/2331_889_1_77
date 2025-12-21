@@ -31,8 +31,8 @@ public class StudentProfileServiceImpl implements StudentProfileService {
     }
 
     @Override
-    public StudentProfile getByEntrollmentId(String entrollmentId) {
-        return repository.findByEntrollmentId(entrollmentId);
+    public StudentProfile getByEnrollmentId(String enrollmentId) {
+        return repository.findByEnrollmentId(enrollmentId);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class StudentProfileServiceImpl implements StudentProfileService {
         StudentProfile existing = repository.findById(id).orElse(null);
 
         if (existing != null) {
-            existing.setEntrollmentId(profile.getEntrollmentId());
+            existing.setEnrollmentId(profile.getEnrollmentId());
             existing.setCohort(profile.getCohort());
             existing.setYearLevel(profile.getYearLevel());
             existing.setActive(profile.getActive());
