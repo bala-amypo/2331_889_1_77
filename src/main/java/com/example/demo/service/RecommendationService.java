@@ -35,9 +35,9 @@ public class RecommendationServiceImpl implements RecommendationService {
 
         if (existing != null) {
             existing.setRecommendedAction(recommendation.getRecommendedAction());
-            existing.setHIGH(recommendation.getHIGH());
-            existing.setMEDIUM(recommendation.getMEDIUM());
-            existing.setLOW(recommendation.getLOW());
+            existing.setHigh(recommendation.getHigh());
+            existing.setMedium(recommendation.getMedium());
+            existing.setLow(recommendation.getLow());
             existing.setGapScore(recommendation.getGapScore());
             existing.setGeneratedAt(recommendation.getGeneratedAt());
             existing.setGeneratedBy(recommendation.getGeneratedBy());
