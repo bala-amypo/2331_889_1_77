@@ -2,66 +2,53 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 
-@Entity
-@Table(name = "student_profiles")
-public class StudentProfile {
-
+public class StudentProfile{
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(unique = true, nullable = false)
-    private String enrollmentId;
-
+    @Column(unique=true)
+    private String entrollmentId;
     private String cohort;
-    private String yearLevel;
-
+    private Integer yearLevel;
     private Boolean active;
-
-    // Constructors
-    public StudentProfile() {}
-
-    public StudentProfile(String enrollmentId, String cohort, String yearLevel, Boolean active) {
-        this.enrollmentId = enrollmentId;
-        this.cohort = cohort;
-        this.yearLevel = yearLevel;
-        this.active = active;
-    }
-
-    // Getters and Setters
     public Long getId() {
         return id;
     }
-
-    public String getEnrollmentId() {
-        return enrollmentId;
+    public void setId(Long id) {
+        this.id = id;
     }
-
-    public void setEnrollmentId(String enrollmentId) {
-        this.enrollmentId = enrollmentId;
+    public String getEntrollmentId() {
+        return entrollmentId;
     }
-
+    public void setEntrollmentId(String entrollmentId) {
+        this.entrollmentId = entrollmentId;
+    }
     public String getCohort() {
         return cohort;
     }
-
     public void setCohort(String cohort) {
         this.cohort = cohort;
     }
-
-    public String getYearLevel() {
+    public Integer getYearLevel() {
         return yearLevel;
     }
-
-    public void setYearLevel(String yearLevel) {
+    public void setYearLevel(Integer yearLevel) {
         this.yearLevel = yearLevel;
     }
-
     public Boolean getActive() {
         return active;
     }
-
     public void setActive(Boolean active) {
         this.active = active;
     }
+    public StudentProfile(Long id, String entrollmentId, String cohort, Integer yearLevel, Boolean active) {
+        this.id = id;
+        this.entrollmentId = entrollmentId;
+        this.cohort = cohort;
+        this.yearLevel = yearLevel;
+        this.active = active;
+    }
+    public StudentProfile() {
+    }
+    
+
 }
