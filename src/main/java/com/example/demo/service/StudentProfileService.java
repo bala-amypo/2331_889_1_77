@@ -8,55 +8,36 @@ import org.springframework.stereotype.Service;
 import com.example.demo.entity.StudentProfile;
 import com.example.demo.repository.StudentProfileRepository;
 
+public interface StudentProfileService {
+    StudentProfile createProfile(StudentProfile profile);
+    StudentProfile getProfileById(Long id);
+    StudentProfile getProfileByEnrollmentId(String enrollmentId);
+    List<StudentProfile> getAllProfiles();
+}
+
 @Service
 public class StudentProfileServiceImpl implements StudentProfileService {
-
     @Autowired
     private StudentProfileRepository repository;
 
     @Override
-    public StudentProfile saveStudentProfile(StudentProfile profile) {
-
-        // Default active = true
-        if (profile.getActive() == null) {
-            profile.setActive(true);
-        }
-
+    public StudentProfile createProfile(StudentProfile profile) {
         return repository.save(profile);
     }
 
     @Override
-    public StudentProfile getStudentProfileById(Long id) {
-        return repository.findById(id).orElse(null);
+    public StudentProfile getProfileById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
     }
 
     @Override
-    public StudentProfile getByEnrollmentId(String enrollmentId) {
+    public StudentProfile getProfileByEnrollmentId(String enrollmentId) {
         return repository.findByEnrollmentId(enrollmentId);
     }
 
     @Override
-    public List<StudentProfile> getAllStudentProfiles() {
+    public List<StudentProfile> getAllProfiles() {
         return repository.findAll();
-    }
-
-    @Override
-    public StudentProfile updateStudentProfile(Long id, StudentProfile profile) {
-        StudentProfile existing = repository.findById(id).orElse(null);
-
-        if (existing != null) {
-            existing.setEnrollmentId(profile.getEnrollmentId());
-            existing.setCohort(profile.getCohort());
-            existing.setYearLevel(profile.getYearLevel());
-            existing.setActive(profile.getActive());
-
-            return repository.save(existing);
-        }
-        return null;
-    }
-
-    @Override
-    public void deleteStudentProfile(Long id) {
-        repository.deleteById(id);
     }
 }
