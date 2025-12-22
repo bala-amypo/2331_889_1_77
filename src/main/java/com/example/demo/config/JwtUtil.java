@@ -1,55 +1,47 @@
 package com.example.demo.config;
 
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
-import java.util.Date;
-
-import org.springframework.beans.factory.annotation.Value;
+import com.example.demo.entity.User;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
-import com.example.demo.entity.User;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
+import javax.crypto.SecretKey;
+import java.util.Date;
 
 @Component
+// cspell:ignore Jwts
 public class JwtUtil {
+    private final SecretKey signingKey;
+    private final long validityInMs;
 
-    @Value("${jwt.secret}")
-    private String secret;
-
-    @Value("${jwt.expiration}")
-    private long expiration;
-
-    private Key getSignKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    public JwtUtil(JwtProperties jwtProperties) {
+        this.signingKey = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes());
+        this.validityInMs = jwtProperties.getValidity();
     }
 
-    // Called from AuthController
     public String generateToken(User user) {
-        // ✅ CHANGE THIS if your User uses a different field
-        return generateToken(user.getEmail());
-    }
-
-    public String generateToken(String subject) {
         return Jwts.builder()
-                .setSubject(subject)   // ✅ correct for jjwt 0.11.x
+                .claim("userId", user.getId())
+                .claim("email", user.getEmail())
+                .claim("role", user.getRole())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getSignKey())
+                .setExpiration(new Date(System.currentTimeMillis() + validityInMs))
+                .signWith(signingKey)
                 .compact();
     }
 
-    // Called from JwtAuthenticationFilter
-    public Claims getClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(getSignKey()) // ✅ correct for jjwt 0.11.x
-                .parseClaimsJws(token)
-                .getBody();
+    public Jwt<?, ?> validateAndParse(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(signingKey)
+                .build()
+                .parse(token);
     }
 
-    public String extractSubject(String token) {
-        return getClaims(token).getSubject();
+    public Claims getClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(signingKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 }
