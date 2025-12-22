@@ -1,51 +1,27 @@
 package com.example.demo.controller;
 
-import com.example.demo.config.JwtUtil;
-import com.example.demo.dto.LoginRequest;
-import com.example.demo.dto.RegisterRequest;
-import com.example.demo.entity.User;
-import com.example.demo.service.AuthService;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.example.demo.dto.AuthResponse;
+import com.example.demo.dto.LoginRequest;
+import com.example.demo.dto.RegisterRequest;
+import com.example.demo.service.AuthService;
 
 @RestController
 @RequestMapping("/auth")
-@Tag(name = "Auth", description = "Authentication operations")
 public class AuthController {
-    private final AuthService authService;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
 
-    public AuthController(AuthService authService, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
-        this.authService = authService;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtUtil = jwtUtil;
-    }
+    @Autowired
+    private AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody RegisterRequest request) {
-        User user = authService.register(request);
-        return ResponseEntity.ok(user);
+    public AuthResponse register(@RequestBody RegisterRequest request) {
+        return authService.register(request);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
-        User user = authService.login(request);
-            String token = jwtUtil.generateToken(user.getUsername());
-    return ResponseEntity.ok(new AuthResponse(token));
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            return ResponseEntity.badRequest().body("Invalid credentials");
-        }
-        
-        String token = jwtUtil.generateToken(user.getUsername()); 
-        Map<String, String> response = new HashMap<>();
-        response.put("token", token);
-        
-        return ResponseEntity.ok(response);
+    public AuthResponse login(@RequestBody LoginRequest request) {
+        return authService.login(request);
     }
 }
