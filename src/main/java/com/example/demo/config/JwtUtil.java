@@ -26,30 +26,30 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    // Used by AuthController
+    // Called from AuthController
     public String generateToken(User user) {
-        return generateToken(user.getUsername());
+        // ✅ CHANGE THIS if your User uses a different field
+        return generateToken(user.getEmail());
     }
 
-    public String generateToken(String username) {
+    public String generateToken(String subject) {
         return Jwts.builder()
-                .subject(username)
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .setSubject(subject)   // ✅ correct for jjwt 0.11.x
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignKey())
                 .compact();
     }
 
-    // Used by JwtAuthenticationFilter
+    // Called from JwtAuthenticationFilter
     public Claims getClaims(String token) {
         return Jwts.parser()
-                .verifyWith((javax.crypto.SecretKey) getSignKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+                .setSigningKey(getSignKey()) // ✅ correct for jjwt 0.11.x
+                .parseClaimsJws(token)
+                .getBody();
     }
 
-    public String extractUsername(String token) {
+    public String extractSubject(String token) {
         return getClaims(token).getSubject();
     }
 }
