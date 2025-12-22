@@ -28,14 +28,14 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<User> register(@RequestBody RegisterRequest request) {
         User user = authService.register(request);
         return ResponseEntity.ok(user);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        User user = authService.findByEmail(request.getEmail());
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
+        User user = authService.login(request);
         
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             return ResponseEntity.badRequest().body("Invalid credentials");
