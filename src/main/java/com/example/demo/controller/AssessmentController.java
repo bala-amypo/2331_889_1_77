@@ -1,51 +1,38 @@
 package com.example.demo.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.demo.entity.AssessmentResult;
+import com.example.demo.service.AssessmentService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.demo.entity.AssessmentResult;
-import com.example.demo.service.AssessmentResultService;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/assessments")
+@Tag(name = "Assessments", description = "Assessment result operations")
 public class AssessmentController {
+    private final AssessmentService assessmentService;
 
-    @Autowired
-    private AssessmentResultService assessmentService;
-
-    
-    @PostMapping
-    public AssessmentResult createAssessment(
-            @RequestBody AssessmentResult assessment) {
-        return assessmentService.saveAssessment(assessment);
+    public AssessmentController(AssessmentService assessmentService) {
+        this.assessmentService = assessmentService;
     }
 
-    
-    @GetMapping("/{id}")
-    public AssessmentResult getAssessmentById(@PathVariable Long id) {
-        return assessmentService.getAssessmentById(id);
+    @PostMapping("/")
+    public ResponseEntity<?> recordAssessment(@RequestBody AssessmentResult result) {
+        AssessmentResult recorded = assessmentService.recordAssessment(result);
+        return ResponseEntity.ok(recorded);
     }
 
-    
-    @GetMapping
-    public List<AssessmentResult> getAllAssessments() {
-        return assessmentService.getAllAssessments();
+    @GetMapping("/student/{studentId}")
+    public ResponseEntity<?> getResultsByStudent(@PathVariable Long studentId) {
+        List<AssessmentResult> results = assessmentService.getResultsByStudent(studentId);
+        return ResponseEntity.ok(results);
     }
 
-   
-    @PutMapping("/{id}")
-    public AssessmentResult updateAssessment(
-            @PathVariable Long id,
-            @RequestBody AssessmentResult assessment) {
-        return assessmentService.updateAssessment(id, assessment);
-    }
-
-   
-    @DeleteMapping("/{id}")
-    public String deleteAssessment(@PathVariable Long id) {
-        assessmentService.deleteAssessment(id);
-        return "Assessment result deleted successfully";
+    @GetMapping("/student/{studentId}/skill/{skillId}")
+    public ResponseEntity<?> getResultsByStudentAndSkill(@PathVariable Long studentId, @PathVariable Long skillId) {
+        List<AssessmentResult> results = assessmentService.getResultsByStudentAndSkill(studentId, skillId);
+        return ResponseEntity.ok(results);
     }
 }

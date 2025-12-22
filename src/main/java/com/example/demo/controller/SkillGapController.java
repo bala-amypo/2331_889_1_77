@@ -1,50 +1,32 @@
 package com.example.demo.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import com.example.demo.entity.SkillGapRecord;
 import com.example.demo.service.SkillGapService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/skill-gaps")
+@RequestMapping("/api/gaps")
+@Tag(name = "Gaps", description = "Skill gap analysis operations")
 public class SkillGapController {
+    private final SkillGapService skillGapService;
 
-    @Autowired
-    private SkillGapService skillGapService;
-
-    
-    @PostMapping
-    public SkillGapRecord createSkillGap(@RequestBody SkillGapRecord record) {
-        return skillGapService.saveSkillGap(record);
+    public SkillGapController(SkillGapService skillGapService) {
+        this.skillGapService = skillGapService;
     }
 
-    
-    @GetMapping("/{id}")
-    public SkillGapRecord getSkillGapById(@PathVariable Long id) {
-        return skillGapService.getSkillGapById(id);
+    @PostMapping("/compute/{studentId}")
+    public ResponseEntity<?> computeGaps(@PathVariable Long studentId) {
+        List<SkillGapRecord> gaps = skillGapService.computeGaps(studentId);
+        return ResponseEntity.ok(gaps);
     }
 
-    
-    @GetMapping
-    public List<SkillGapRecord> getAllSkillGaps() {
-        return skillGapService.getAllSkillGaps();
-    }
-
-    
-    @PutMapping("/{id}")
-    public SkillGapRecord updateSkillGap(
-            @PathVariable Long id,
-            @RequestBody SkillGapRecord record) {
-        return skillGapService.updateSkillGap(id, record);
-    }
-
-    
-    @DeleteMapping("/{id}")
-    public String deleteSkillGap(@PathVariable Long id) {
-        skillGapService.deleteSkillGap(id);
-        return "Skill gap record deleted successfully";
+    @GetMapping("/student/{studentId}")
+    public ResponseEntity<?> getGapsByStudent(@PathVariable Long studentId) {
+        List<SkillGapRecord> gaps = skillGapService.getGapsByStudent(studentId);
+        return ResponseEntity.ok(gaps);
     }
 }

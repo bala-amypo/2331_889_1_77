@@ -1,56 +1,44 @@
 package com.example.demo.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import com.example.demo.entity.StudentProfile;
 import com.example.demo.service.StudentProfileService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/student-profiles")
+@RequestMapping("/api/students")
+@Tag(name = "Students", description = "Student profile operations")
 public class StudentProfileController {
+    private final StudentProfileService studentProfileService;
 
-    @Autowired
-    private StudentProfileService studentProfileService;
-
-    
-    @PostMapping
-    public StudentProfile createStudentProfile(@RequestBody StudentProfile profile) {
-        return studentProfileService.saveStudentProfile(profile);
+    public StudentProfileController(StudentProfileService studentProfileService) {
+        this.studentProfileService = studentProfileService;
     }
 
-    
+    @PostMapping("/")
+    public ResponseEntity<?> createProfile(@RequestBody StudentProfile profile) {
+        StudentProfile created = studentProfileService.createOrUpdateProfile(profile);
+        return ResponseEntity.ok(created);
+    }
+
     @GetMapping("/{id}")
-    public StudentProfile getStudentProfileById(@PathVariable Long id) {
-        return studentProfileService.getStudentProfileById(id);
+    public ResponseEntity<?> getProfile(@PathVariable Long id) {
+        StudentProfile profile = studentProfileService.getProfileById(id);
+        return ResponseEntity.ok(profile);
     }
 
-    
-    @GetMapping("/enrollment/{entrollmentId}")
-    public StudentProfile getByEntrollmentId(@PathVariable String entrollmentId) {
-        return studentProfileService.getByEntrollmentId(entrollmentId);
+    @GetMapping("/enrollment/{enrollmentId}")
+    public ResponseEntity<?> getProfileByEnrollment(@PathVariable String enrollmentId) {
+        StudentProfile profile = studentProfileService.getProfileByEnrollmentId(enrollmentId);
+        return ResponseEntity.ok(profile);
     }
 
-    
-    @GetMapping
-    public List<StudentProfile> getAllStudentProfiles() {
-        return studentProfileService.getAllStudentProfiles();
-    }
-
-    
-    @PutMapping("/{id}")
-    public StudentProfile updateStudentProfile(
-            @PathVariable Long id,
-            @RequestBody StudentProfile profile) {
-        return studentProfileService.updateStudentProfile(id, profile);
-    }
-
-    
-    @DeleteMapping("/{id}")
-    public String deleteStudentProfile(@PathVariable Long id) {
-        studentProfileService.deleteStudentProfile(id);
-        return "StudentProfile deleted successfully";
+    @GetMapping("/")
+    public ResponseEntity<?> getAllProfiles() {
+        List<StudentProfile> profiles = studentProfileService.getAllProfiles();
+        return ResponseEntity.ok(profiles);
     }
 }

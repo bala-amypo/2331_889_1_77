@@ -1,51 +1,32 @@
 package com.example.demo.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import com.example.demo.entity.SkillGapRecommendation;
 import com.example.demo.service.RecommendationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/recommendations")
+@Tag(name = "Recommendations", description = "Recommendation operations")
 public class RecommendationController {
+    private final RecommendationService recommendationService;
 
-    @Autowired
-    private RecommendationService recommendationService;
-
-    
-    @PostMapping
-    public SkillGapRecommendation createRecommendation(
-            @RequestBody SkillGapRecommendation recommendation) {
-        return recommendationService.saveRecommendation(recommendation);
+    public RecommendationController(RecommendationService recommendationService) {
+        this.recommendationService = recommendationService;
     }
 
-    
-    @GetMapping("/{id}")
-    public SkillGapRecommendation getRecommendationById(@PathVariable Long id) {
-        return recommendationService.getRecommendationById(id);
+    @PostMapping("/generate/{studentId}")
+    public ResponseEntity<?> generateRecommendations(@PathVariable Long studentId) {
+        List<SkillGapRecommendation> recommendations = recommendationService.computeRecommendationsForStudent(studentId);
+        return ResponseEntity.ok(recommendations);
     }
 
-    
-    @GetMapping
-    public List<SkillGapRecommendation> getAllRecommendations() {
-        return recommendationService.getAllRecommendations();
-    }
-
-    
-    @PutMapping("/{id}")
-    public SkillGapRecommendation updateRecommendation(
-            @PathVariable Long id,
-            @RequestBody SkillGapRecommendation recommendation) {
-        return recommendationService.updateRecommendation(id, recommendation);
-    }
-
-    
-    @DeleteMapping("/{id}")
-    public String deleteRecommendation(@PathVariable Long id) {
-        recommendationService.deleteRecommendation(id);
-        return "Recommendation deleted successfully";
+    @GetMapping("/student/{studentId}")
+    public ResponseEntity<?> getRecommendationsForStudent(@PathVariable Long studentId) {
+        List<SkillGapRecommendation> recommendations = recommendationService.getRecommendationsForStudent(studentId);
+        return ResponseEntity.ok(recommendations);
     }
 }
