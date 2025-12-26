@@ -13,7 +13,7 @@ public interface AssessmentResultRepository extends JpaRepository<AssessmentResu
     List<AssessmentResult> findByStudentProfileIdAndSkillId(Long studentProfileId, Long skillId);
     
     @Query("SELECT ar FROM AssessmentResult ar WHERE ar.studentProfile.id = :studentId ORDER BY ar.attemptedAt DESC")
-    List<AssessmentResult> findRecentByStudent(@Param("studentId") Long studentId);
+    List<AssessmentResulzt> findRecentByStudent(@Param("studentId") Long studentId);
     
     @Query("SELECT AVG(ar.score) FROM AssessmentResult ar WHERE ar.studentProfile.grade = :cohort AND ar.skill.id = :skillId")
     Double avgScoreByCohortAndSkill(@Param("cohort") String cohort, @Param("skillId") Long skillId);
