@@ -42,7 +42,8 @@ public class AuthController {
             return ResponseEntity.badRequest().build();
         }
         
-        String token = jwtUtil.generateToken(user);
+       String token = jwtUtil.generateToken(user.getEmail());
+
         Map<String, String> response = new HashMap<>();
         response.put("token", token);
         
