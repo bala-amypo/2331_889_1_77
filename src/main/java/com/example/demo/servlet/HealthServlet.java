@@ -16,6 +16,6 @@ public class HealthServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().write("{\"status\":\"UP\",\"service\":\"Student Skill Gap Analyzer\"}");
+        response.getWriter().write("{\"status\":\"UP\"}");
     }
 }

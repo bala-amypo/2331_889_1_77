@@ -9,17 +9,28 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-public class AuthServiceImpl implements AuthService {
+public class UserServiceImpl implements AuthService {
+    
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
-    public AuthServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
-
+    
+    public User register(User user) {
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new IllegalArgumentException("Email already exists");
+        }
+        
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userRepository.save(user);
+    }
+    
     @Override
     public User register(RegisterRequest req) {
         if (userRepository.existsByEmail(req.getEmail())) {
@@ -34,27 +45,23 @@ public class AuthServiceImpl implements AuthService {
         
         return userRepository.save(user);
     }
-
+    
     @Override
     public User getById(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("User ID cannot be null");
-        }
-        
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
-
+    
     @Override
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
-
+    
     @Override
     public List<User> listInstructors() {
         return userRepository.findAll().stream()
                 .filter(user -> "INSTRUCTOR".equals(user.getRole()))
-                .toList();
+                .collect(Collectors.toList());
     }
 }
