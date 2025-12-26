@@ -6,72 +6,66 @@ import java.time.Instant;
 @Entity
 @Table(name = "student_profiles")
 public class StudentProfile {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-    
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String enrollmentId;
     
-    @Column(nullable = false)
-    private String cohort;
+    private String grade;
     
-    @Column(nullable = false)
-    private Integer yearLevel;
+    @Column(name = "user_id")
+    private Long userId;
     
-    @Column(nullable = false)
-    private Boolean active = true;
-    
-    @Column(nullable = false)
-    private Instant lastUpdatedAt;
-    
-    @PrePersist
-    protected void onCreate() {
-        lastUpdatedAt = Instant.now();
-    }
-    
-    @PreUpdate
-    protected void onUpdate() {
-        lastUpdatedAt = Instant.now();
-    }
-    
-    public void preUpdate() {
-        lastUpdatedAt = Instant.now();
-    }
+    private Instant lastUpdatedAt = Instant.now();
     
     public StudentProfile() {}
     
-    public StudentProfile(User user, String enrollmentId, String cohort, Integer yearLevel) {
-        this.user = user;
+    public StudentProfile(Long id, String enrollmentId, String grade, Long userId, Instant lastUpdatedAt) {
+        this.id = id;
         this.enrollmentId = enrollmentId;
-        this.cohort = cohort;
-        this.yearLevel = yearLevel;
-        this.active = true;
+        this.grade = grade;
+        this.userId = userId;
+        this.lastUpdatedAt = lastUpdatedAt != null ? lastUpdatedAt : Instant.now();
     }
     
+    public static StudentProfileBuilder builder() {
+        return new StudentProfileBuilder();
+    }
+    
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-    
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
-    
     public String getEnrollmentId() { return enrollmentId; }
     public void setEnrollmentId(String enrollmentId) { this.enrollmentId = enrollmentId; }
-    
-    public String getCohort() { return cohort; }
-    public void setCohort(String cohort) { this.cohort = cohort; }
-    
-    public Integer getYearLevel() { return yearLevel; }
-    public void setYearLevel(Integer yearLevel) { this.yearLevel = yearLevel; }
-    
-    public Boolean getActive() { return active; }
-    public void setActive(Boolean active) { this.active = active; }
-    
+    public String getGrade() { return grade; }
+    public void setGrade(String grade) { this.grade = grade; }
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
     public Instant getLastUpdatedAt() { return lastUpdatedAt; }
     public void setLastUpdatedAt(Instant lastUpdatedAt) { this.lastUpdatedAt = lastUpdatedAt; }
+    
+    @PreUpdate
+    public void preUpdate() {
+        this.lastUpdatedAt = Instant.now();
+    }
+    
+    public static class StudentProfileBuilder {
+        private Long id;
+        private String enrollmentId;
+        private String grade;
+        private Long userId;
+        private Instant lastUpdatedAt = Instant.now();
+        
+        public StudentProfileBuilder id(Long id) { this.id = id; return this; }
+        public StudentProfileBuilder enrollmentId(String enrollmentId) { this.enrollmentId = enrollmentId; return this; }
+        public StudentProfileBuilder grade(String grade) { this.grade = grade; return this; }
+        public StudentProfileBuilder userId(Long userId) { this.userId = userId; return this; }
+        public StudentProfileBuilder lastUpdatedAt(Instant lastUpdatedAt) { this.lastUpdatedAt = lastUpdatedAt; return this; }
+        
+        public StudentProfile build() {
+            return new StudentProfile(id, enrollmentId, grade, userId, lastUpdatedAt);
+        }
+    }
 }
