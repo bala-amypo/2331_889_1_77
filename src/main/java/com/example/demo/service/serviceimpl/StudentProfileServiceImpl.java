@@ -10,12 +10,13 @@ import java.util.List;
 
 @Service
 public class StudentProfileServiceImpl implements StudentProfileService {
+    
     private final StudentProfileRepository studentProfileRepository;
-
+    
     public StudentProfileServiceImpl(StudentProfileRepository studentProfileRepository) {
         this.studentProfileRepository = studentProfileRepository;
     }
-
+    
     @Override
     public StudentProfile createOrUpdateProfile(StudentProfile profile) {
         if (profile.getId() == null && studentProfileRepository.existsByEnrollmentId(profile.getEnrollmentId())) {
@@ -23,29 +24,25 @@ public class StudentProfileServiceImpl implements StudentProfileService {
         }
         return studentProfileRepository.save(profile);
     }
-
+    
     @Override
     public StudentProfile getProfileById(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("Profile ID cannot be null");
-        }
-        
         return studentProfileRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Profile not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Student profile not found"));
     }
-
+    
     @Override
     public StudentProfile getByUserId(Long userId) {
         return studentProfileRepository.findByUserId(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Profile not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Student profile not found"));
     }
-
+    
     @Override
     public StudentProfile getProfileByEnrollmentId(String enrollmentId) {
         return studentProfileRepository.findByEnrollmentId(enrollmentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Profile not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Student profile not found"));
     }
-
+    
     @Override
     public List<StudentProfile> getAllProfiles() {
         return studentProfileRepository.findAll();

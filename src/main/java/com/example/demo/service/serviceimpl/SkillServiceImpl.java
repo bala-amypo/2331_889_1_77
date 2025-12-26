@@ -10,33 +10,37 @@ import java.util.List;
 
 @Service
 public class SkillServiceImpl implements SkillService {
+    
     private final SkillRepository skillRepository;
-
+    
     public SkillServiceImpl(SkillRepository skillRepository) {
         this.skillRepository = skillRepository;
     }
-
+    
     @Override
     public Skill createSkill(Skill skill) {
         if (skillRepository.findBySkillName(skill.getSkillName()).isPresent()) {
-            throw new IllegalArgumentException("Skill with unique name already exists");
+            throw new IllegalArgumentException("Skill name must be unique");
+        }
+        if (skill.getMinCompetencyScore() < 0 || skill.getMinCompetencyScore() > 100) {
+            throw new IllegalArgumentException("Min competency score must be between 0 and 100");
+        }
+        return skillRepository.save(skill);
+    }
+    
+    @Override
+    public Skill updateSkill(Long id, Skill skill) {
+        Skill existing = skillRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Skill not found"));
+        
+        if (!existing.getSkillName().equals(skill.getSkillName()) && 
+            skillRepository.findBySkillName(skill.getSkillName()).isPresent()) {
+            throw new IllegalArgumentException("Skill name must be unique");
         }
         
         if (skill.getMinCompetencyScore() < 0 || skill.getMinCompetencyScore() > 100) {
-            throw new IllegalArgumentException("Score must be between 0 and 100");
+            throw new IllegalArgumentException("Min competency score must be between 0 and 100");
         }
-        
-        return skillRepository.save(skill);
-    }
-
-    @Override
-    public Skill updateSkill(Long id, Skill skill) {
-        if (id == null) {
-            throw new IllegalArgumentException("Skill ID cannot be null");
-        }
-        
-        Skill existing = skillRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Skill not found"));
         
         existing.setSkillName(skill.getSkillName());
         existing.setCategory(skill.getCategory());
@@ -46,27 +50,23 @@ public class SkillServiceImpl implements SkillService {
         
         return skillRepository.save(existing);
     }
-
+    
     @Override
     public Skill getById(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("Skill ID cannot be null");
-        }
-        
         return skillRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Skill not found"));
     }
-
+    
     @Override
     public List<Skill> getAllSkills() {
         return skillRepository.findAll();
     }
-
+    
     @Override
     public List<Skill> getActiveSkills() {
         return skillRepository.findByActiveTrue();
     }
-
+    
     @Override
     public void deactivateSkill(Long id) {
         Skill skill = getById(id);
