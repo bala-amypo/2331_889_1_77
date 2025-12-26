@@ -1,38 +1,50 @@
 package com.example.demo.config;
 
-import java.util.Date;
-
-import org.springframework.beans.factory.annotation.Value;
+import com.example.demo.entity.User;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
+import javax.crypto.SecretKey;
+import java.util.Date;
 
 @Component
+// cspell:ignore Jwts
 public class JwtUtil {
+    private final SecretKey signingKey;
+    private final long validityInMs;
 
-    @Value("${jwt.secret}")
-    private String secret;
+    public JwtUtil(JwtProperties jwtProperties) {
+        if (jwtProperties == null || jwtProperties.getSecret() == null) {
+            throw new IllegalArgumentException("JWT properties cannot be null");
+        }
+        this.signingKey = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes());
+        this.validityInMs = jwtProperties.getValidity();
+    }
 
-    @Value("${jwt.expiration}")
-    private long expiration;
-
-    public String generateToken(String username) {
+    public String generateToken(User user) {
         return Jwts.builder()
-                .setSubject(username)
+                .claim("userId", user.getId())
+                .claim("email", user.getEmail())
+                .claim("role", user.getRole())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(Keys.hmacShaKeyFor(secret.getBytes()), SignatureAlgorithm.HS256)
+                .setExpiration(new Date(System.currentTimeMillis() + validityInMs))
+                .signWith(signingKey)
                 .compact();
     }
 
-    public String extractUsername(String token) {
+    public Jwt<?, ?> validateAndParse(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(secret.getBytes())
+                .setSigningKey(signingKey)
+                .build()
+                .parse(token);
+    }
+
+    public Claims getClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(signingKey)
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
     }
 }
