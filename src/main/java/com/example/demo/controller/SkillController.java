@@ -12,38 +12,39 @@ import java.util.List;
 @RequestMapping("/api/skills")
 @Tag(name = "Skills", description = "Skill management operations")
 public class SkillController {
+    
     private final SkillService skillService;
-
+    
     public SkillController(SkillService skillService) {
         this.skillService = skillService;
     }
-
-    @PostMapping("/")
-    public ResponseEntity<?> createSkill(@RequestBody Skill skill) {
+    
+    @PostMapping
+    public ResponseEntity<Skill> createSkill(@RequestBody Skill skill) {
         Skill created = skillService.createSkill(skill);
         return ResponseEntity.ok(created);
     }
-
+    
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateSkill(@PathVariable Long id, @RequestBody Skill skill) {
+    public ResponseEntity<Skill> updateSkill(@PathVariable Long id, @RequestBody Skill skill) {
         Skill updated = skillService.updateSkill(id, skill);
         return ResponseEntity.ok(updated);
     }
-
+    
     @GetMapping("/{id}")
-    public ResponseEntity<?> getSkill(@PathVariable Long id) {
+    public ResponseEntity<Skill> getSkill(@PathVariable Long id) {
         Skill skill = skillService.getById(id);
         return ResponseEntity.ok(skill);
     }
-
-    @GetMapping("/")
-    public ResponseEntity<?> getAllSkills() {
+    
+    @GetMapping
+    public ResponseEntity<List<Skill>> getAllSkills() {
         List<Skill> skills = skillService.getAllSkills();
         return ResponseEntity.ok(skills);
     }
-
+    
     @PutMapping("/{id}/deactivate")
-    public ResponseEntity<?> deactivateSkill(@PathVariable Long id) {
+    public ResponseEntity<Void> deactivateSkill(@PathVariable Long id) {
         skillService.deactivateSkill(id);
         return ResponseEntity.ok().build();
     }

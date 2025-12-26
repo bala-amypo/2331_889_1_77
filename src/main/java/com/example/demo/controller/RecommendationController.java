@@ -12,20 +12,21 @@ import java.util.List;
 @RequestMapping("/api/recommendations")
 @Tag(name = "Recommendations", description = "Recommendation operations")
 public class RecommendationController {
+    
     private final RecommendationService recommendationService;
-
+    
     public RecommendationController(RecommendationService recommendationService) {
         this.recommendationService = recommendationService;
     }
-
+    
     @PostMapping("/generate/{studentId}")
-    public ResponseEntity<?> generateRecommendations(@PathVariable Long studentId) {
+    public ResponseEntity<List<SkillGapRecommendation>> generateRecommendations(@PathVariable Long studentId) {
         List<SkillGapRecommendation> recommendations = recommendationService.computeRecommendationsForStudent(studentId);
         return ResponseEntity.ok(recommendations);
     }
-
+    
     @GetMapping("/student/{studentId}")
-    public ResponseEntity<?> getRecommendationsForStudent(@PathVariable Long studentId) {
+    public ResponseEntity<List<SkillGapRecommendation>> getRecommendationsForStudent(@PathVariable Long studentId) {
         List<SkillGapRecommendation> recommendations = recommendationService.getRecommendationsForStudent(studentId);
         return ResponseEntity.ok(recommendations);
     }

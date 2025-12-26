@@ -12,32 +12,33 @@ import java.util.List;
 @RequestMapping("/api/students")
 @Tag(name = "Students", description = "Student profile operations")
 public class StudentProfileController {
+    
     private final StudentProfileService studentProfileService;
-
+    
     public StudentProfileController(StudentProfileService studentProfileService) {
         this.studentProfileService = studentProfileService;
     }
-
-    @PostMapping("/")
-    public ResponseEntity<?> createProfile(@RequestBody StudentProfile profile) {
+    
+    @PostMapping
+    public ResponseEntity<StudentProfile> createProfile(@RequestBody StudentProfile profile) {
         StudentProfile created = studentProfileService.createOrUpdateProfile(profile);
         return ResponseEntity.ok(created);
     }
-
+    
     @GetMapping("/{id}")
-    public ResponseEntity<?> getProfile(@PathVariable Long id) {
+    public ResponseEntity<StudentProfile> getProfile(@PathVariable Long id) {
         StudentProfile profile = studentProfileService.getProfileById(id);
         return ResponseEntity.ok(profile);
     }
-
+    
     @GetMapping("/enrollment/{enrollmentId}")
-    public ResponseEntity<?> getProfileByEnrollment(@PathVariable String enrollmentId) {
+    public ResponseEntity<StudentProfile> getProfileByEnrollment(@PathVariable String enrollmentId) {
         StudentProfile profile = studentProfileService.getProfileByEnrollmentId(enrollmentId);
         return ResponseEntity.ok(profile);
     }
-
-    @GetMapping("/")
-    public ResponseEntity<?> getAllProfiles() {
+    
+    @GetMapping
+    public ResponseEntity<List<StudentProfile>> getAllProfiles() {
         List<StudentProfile> profiles = studentProfileService.getAllProfiles();
         return ResponseEntity.ok(profiles);
     }
