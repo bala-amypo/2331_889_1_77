@@ -1,60 +1,96 @@
 package com.example.demo.serviceimpl;
 
-import com.example.demo.entity.*;
-import com.example.demo.repository.*;
-import com.example.demo.service.RecommendationService;
-import org.springframework.stereotype.Service;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
+import com.example.demo.entity.AssessmentResult;
+import com.example.demo.entity.Skill;
+import com.example.demo.entity.SkillGapRecommendation;
+import com.example.demo.entity.StudentProfile;
+import com.example.demo.repository.AssessmentResultRepository;
+import com.example.demo.repository.SkillGapRecommendationRepository;
+import com.example.demo.repository.SkillRepository;
+import com.example.demo.repository.StudentProfileRepository;
+import com.example.demo.service.RecommendationService;
 
 @Service
 public class RecommendationServiceImpl implements RecommendationService {
-    private final AssessmentResultRepository assessmentRepository;
-    private final SkillGapRecommendationRepository recommendationRepository;
-    private final StudentProfileRepository profileRepository;
+
+    private final AssessmentResultRepository assessmentResultRepository;
+    private final SkillGapRecommendationRepository skillGapRecommendationRepository;
+    private final StudentProfileRepository studentProfileRepository;
     private final SkillRepository skillRepository;
 
-    public RecommendationServiceImpl(AssessmentResultRepository assessmentRepository,
-                                   SkillGapRecommendationRepository recommendationRepository,
-                                   StudentProfileRepository profileRepository,
+    public RecommendationServiceImpl(AssessmentResultRepository assessmentResultRepository, 
+                                   SkillGapRecommendationRepository skillGapRecommendationRepository,
+                                   StudentProfileRepository studentProfileRepository,
                                    SkillRepository skillRepository) {
-        this.assessmentRepository = assessmentRepository;
-        this.recommendationRepository = recommendationRepository;
-        this.profileRepository = profileRepository;
+        this.assessmentResultRepository = assessmentResultRepository;
+        this.skillGapRecommendationRepository = skillGapRecommendationRepository;
+        this.studentProfileRepository = studentProfileRepository;
         this.skillRepository = skillRepository;
     }
 
     @Override
     public SkillGapRecommendation computeRecommendationForStudentSkill(Long studentId, Long skillId) {
-        StudentProfile profile = profileRepository.findById(studentId).orElseThrow();
-        Skill skill = skillRepository.findById(skillId).orElseThrow();
+        StudentProfile student = studentProfileRepository.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+        Skill skill = skillRepository.findById(skillId)
+                .orElseThrow(() -> new RuntimeException("Skill not found"));
         
-        List<AssessmentResult> assessments = assessmentRepository.findByStudentProfileIdAndSkillId(studentId, skillId);
-        double gapScore = assessments.isEmpty() ? 100.0 : 
-            Math.max(0, 100 - assessments.get(assessments.size() - 1).getScore());
+        List<AssessmentResult> assessments = assessmentResultRepository.findByStudentProfileIdAndSkillId(studentId, skillId);
+        
+        double currentScore = 0.0;
+        if (!assessments.isEmpty()) {
+            AssessmentResult latest = assessments.get(assessments.size() - 1);
+            currentScore = (latest.getScore() / latest.getMaxScore()) * 100;
+        }
+        
+        double targetScore = skill.getMinCompetencyScore() != null ? skill.getMinCompetencyScore() : 70.0;
+        double gapScore = Math.max(0, targetScore - currentScore);
+        
+        String priority = gapScore > 20 ? "HIGH" : gapScore > 10 ? "MEDIUM" : "LOW";
+        String action = "Focus on improving " + skill.getName() + " skills";
         
         SkillGapRecommendation recommendation = SkillGapRecommendation.builder()
-            .studentProfile(profile)
-            .skill(skill)
-            .gapScore(gapScore)
-            .generatedBy("SYSTEM")
-            .build();
-            
-        return recommendationRepository.save(recommendation);
+                .studentProfile(student)
+                .skill(skill)
+                .recommendedAction(action)
+                .priority(priority)
+                .gapScore(gapScore)
+                .generatedBy("SYSTEM")
+                .build();
+        
+        return skillGapRecommendationRepository.save(recommendation);
     }
 
     @Override
     public List<SkillGapRecommendation> computeRecommendationsForStudent(Long studentId) {
-        StudentProfile profile = profileRepository.findById(studentId).orElseThrow();
         List<Skill> activeSkills = skillRepository.findByActiveTrue();
+        List<SkillGapRecommendation> recommendations = new ArrayList<>();
         
-        return activeSkills.stream()
-            .map(skill -> computeRecommendationForStudentSkill(studentId, skill.getId()))
-            .collect(Collectors.toList());
+        for (Skill skill : activeSkills) {
+            SkillGapRecommendation rec = computeRecommendationForStudentSkill(studentId, skill.getId());
+            recommendations.add(rec);
+        }
+        
+        return recommendations;
     }
 
     @Override
     public List<SkillGapRecommendation> getRecommendationsForStudent(Long studentId) {
-        return recommendationRepository.findByStudentOrdered(studentId);
+        return skillGapRecommendationRepository.findByStudentOrdered(studentId);
+    }
+
+    @Override
+    public List<SkillGapRecommendation> generateRecommendations(Long studentProfileId) {
+        return computeRecommendationsForStudent(studentProfileId);
+    }
+
+    @Override
+    public List<SkillGapRecommendation> getRecommendationsByStudent(Long studentId) {
+        return skillGapRecommendationRepository.findByStudentProfileIdOrderByGeneratedAtDesc(studentId);
     }
 }
