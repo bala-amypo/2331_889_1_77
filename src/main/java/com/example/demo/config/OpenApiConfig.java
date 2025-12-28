@@ -23,7 +23,7 @@ public class OpenApiConfig {
                         .version("1.0")
                         .description("API for analyzing student skill gaps and generating recommendations"))
                 .servers(List.of(
-                        new Server().url("https://9005.vs.amypo.ai")
+                        new Server().url("https://9305.pro604cr.amypo.ai/")
                 ))
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                 .components(new Components()
