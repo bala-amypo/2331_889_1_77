@@ -1,7 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import java.time.Instant;
 
 @Entity
 @Table(name = "users")
@@ -9,38 +9,60 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @Column(nullable = false)
     private String fullName;
-    
+
     @Column(unique = true, nullable = false)
     private String email;
-    
+
     @Column(nullable = false)
     private String password;
-    
+
     @Enumerated(EnumType.STRING)
-    private Role role;
-    
+    @Column(nullable = false)
+    private Role role = Role.STUDENT;
+
+    @Column(nullable = false)
+    private Instant createdAt = Instant.now();
+
     public enum Role {
-        STUDENT, INSTRUCTOR, ADMIN
+        ADMIN, INSTRUCTOR, STUDENT
     }
-    
+
     public User() {}
-    
-    public static UserBuilder builder() {
-        return new UserBuilder();
+
+    private User(Builder builder) {
+        this.id = builder.id;
+        this.fullName = builder.fullName;
+        this.email = builder.email;
+        this.password = builder.password;
+        this.role = builder.role;
+        this.createdAt = builder.createdAt;
     }
-    
-    public User(Long id, String fullName, String email, String password, Role role) {
-        this.id = id;
-        this.fullName = fullName;
-        this.email = email;
-        this.password = password;
-        this.role = role;
+
+    public static Builder builder() {
+        return new Builder();
     }
-    
-    // Getters and Setters
+
+    public static class Builder {
+        private Long id;
+        private String fullName;
+        private String email;
+        private String password;
+        private Role role = Role.STUDENT;
+        private Instant createdAt = Instant.now();
+
+        public Builder id(Long id) { this.id = id; return this; }
+        public Builder fullName(String fullName) { this.fullName = fullName; return this; }
+        public Builder email(String email) { this.email = email; return this; }
+        public Builder password(String password) { this.password = password; return this; }
+        public Builder role(Role role) { this.role = role; return this; }
+        public Builder createdAt(Instant createdAt) { this.createdAt = createdAt; return this; }
+        public User build() { return new User(this); }
+    }
+
+    // Getters and setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getFullName() { return fullName; }
@@ -51,29 +73,6 @@ public class User {
     public void setPassword(String password) { this.password = password; }
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
-    
-    @PrePersist
-    public void prePersist() {
-        if (password != null && !password.startsWith("$2a$")) {
-            password = new BCryptPasswordEncoder().encode(password);
-        }
-    }
-    
-    public static class UserBuilder {
-        private Long id;
-        private String fullName;
-        private String email;
-        private String password;
-        private Role role;
-        
-        public UserBuilder id(Long id) { this.id = id; return this; }
-        public UserBuilder fullName(String fullName) { this.fullName = fullName; return this; }
-        public UserBuilder email(String email) { this.email = email; return this; }
-        public UserBuilder password(String password) { this.password = password; return this; }
-        public UserBuilder role(Role role) { this.role = role; return this; }
-        
-        public User build() {
-            return new User(id, fullName, email, password, role);
-        }
-    }
+    public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 }
