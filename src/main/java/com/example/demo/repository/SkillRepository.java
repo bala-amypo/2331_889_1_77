@@ -8,6 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface SkillRepository extends JpaRepository<Skill, Long> {
-    Optional<Skill> findByCode(String code);
     List<Skill> findByActiveTrue();
+    Optional<Skill> findByCode(String code);
 }

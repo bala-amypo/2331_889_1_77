@@ -9,6 +9,8 @@ import java.util.List;
 
 @Repository
 public interface SkillGapRecommendationRepository extends JpaRepository<SkillGapRecommendation, Long> {
-    @Query("SELECT r FROM SkillGapRecommendation r WHERE r.studentProfile.id = :studentId ORDER BY r.generatedAt DESC")
+    List<SkillGapRecommendation> findByStudentProfileIdOrderByGeneratedAtDesc(Long studentProfileId);
+    
+    @Query("SELECT sgr FROM SkillGapRecommendation sgr WHERE sgr.studentProfile.id = :studentId ORDER BY sgr.generatedAt DESC")
     List<SkillGapRecommendation> findByStudentOrdered(@Param("studentId") Long studentId);
 }
