@@ -1,26 +1,33 @@
-// package com.example.demo.controller;
+package com.example.demo.controller;
 
-// import com.example.demo.dto.LoginRequest;
-// import com.example.demo.dto.RegisterRequest;
-// import com.example.demo.entity.User;
-// import com.example.demo.service.AuthService;
+import com.example.demo.dto.LoginRequest;
+import com.example.demo.dto.RegisterRequest;
+import com.example.demo.service.AuthService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.Map;
 
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.web.bind.annotation.*;
+@RestController
+@RequestMapping("/auth")
+@Tag(name = "Authentication")
+public class AuthController {
 
-// @RestController
-// @RequestMapping("/api/auth")
-// public class AuthController {
+    private final AuthService authService;
 
-//     @Autowired AuthService authService;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
 
-//     @PostMapping("/register")
-//     public User register(@RequestBody RegisterRequest request) {
-//         return authService.register(request);
-//     }
+    @PostMapping("/register")
+    public ResponseEntity<Map<String, String>> register(@RequestBody RegisterRequest request) {
+        String token = authService.register(request);
+        return ResponseEntity.ok(Map.of("token", token));
+    }
 
-//     @PostMapping("/login")
-//     public User login(@RequestBody LoginRequest request) {
-//         return authService.login(request);
-//     }
-// }
+    @PostMapping("/loginn")
+    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest request) {
+        String token = authService.login(request);
+        return ResponseEntity.ok(Map.of("token", token));
+    }
+}

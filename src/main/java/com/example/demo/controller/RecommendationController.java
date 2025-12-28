@@ -1,33 +1,30 @@
-// package com.example.demo.controller;
+package com.example.demo.controller;
 
-// import com.example.demo.entity.SkillGapRecommendation;
-// import com.example.demo.service.RecommendationService;
-// import org.springframework.http.ResponseEntity;
-// import org.springframework.web.bind.annotation.*;
+import com.example.demo.entity.SkillGapRecommendation;
+import com.example.demo.service.RecommendationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
-// import java.util.List;
+@RestController
+@RequestMapping("/api/recommendations")
+@Tag(name = "Recommendations")
+public class RecommendationController {
 
-// @RestController
-// @RequestMapping("/api/recommendations")
-// public class RecommendationController {
+    private final RecommendationService recommendationService;
 
-//     private final RecommendationService serve;
+    public RecommendationController(RecommendationService recommendationService) {
+        this.recommendationService = recommendationService;
+    }
 
-//     public RecommendationController(RecommendationService serve) {
-//         this.serve = serve;
-//     }
+    @PostMapping("/generate/{studentId}")
+    public ResponseEntity<List<SkillGapRecommendation>> generateRecommendations(@PathVariable Long studentId) {
+        return ResponseEntity.ok(recommendationService.generateRecommendations(studentId));
+    }
 
-//     @PostMapping("/generate/{studentId}")
-//     public ResponseEntity<List<SkillGapRecommendation>> generate(@PathVariable Long studentId) {
-//         return ResponseEntity.ok(
-//                 serve.computeRecommendationsForStudent(studentId)
-//         );
-//     }
-
-//     @GetMapping("/student/{studentId}")
-//     public ResponseEntity<List<SkillGapRecommendation>> get(@PathVariable Long studentId) {
-//         return ResponseEntity.ok(
-//                 serve.getRecommendationsForStudent(studentId)
-//         );
-//     }
-// }
+    @GetMapping("/student/{studentId}")
+    public ResponseEntity<List<SkillGapRecommendation>> getRecommendations(@PathVariable Long studentId) {
+        return ResponseEntity.ok(recommendationService.getRecommendationsByStudent(studentId));
+    }
+}
